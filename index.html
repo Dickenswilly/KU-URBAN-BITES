@@ -800,7 +800,7 @@ window.sendWhatsAppOrder = function() {
             total += sub;
             msg += `• ${item.name} x ${qty} = ${formatPrice(sub)}\n`;
         });
-        msg += `\n💰 Total: ${formatPrice(total)}\nTill Next Time,Thank you🚀🏆!`;
+        msg += `\n💰 Total: ${formatPrice(total)}\n Till Next Time,Thank you🚀!`;
         window.open(`https://wa.me/254795459257?text=${encodeURIComponent(msg)}`, '_blank');
         if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI();
 };
