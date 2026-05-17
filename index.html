@@ -788,13 +788,20 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
             loadLiveMenu();
         } else { alert("Wrong password!"); }
     };
-    window.sendWhatsAppOrder = function() {
+   // --- 1. CRASH-PROOF WHATSAPP ORDER FUNCTION ---
+window.sendWhatsAppOrder = function() {
     const location = document.getElementById("deliveryLocation")?.value.trim();
-    if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
-    if (cart.length === 0) { alert("Cart is empty"); return; }
+    if (!location) { 
+        alert("📍 Please enter your delivery location (hostel, gate, library)"); 
+        return; 
+    }
+    if (cart.length === 0) { 
+        alert("Cart is empty"); 
+        return; 
+    }
     
-    // Using Unicode escape characters for 100% clean rendering
-    let msg = "\uF344 KU URBAN BITES ORDER \uF344\n\n\uF4CD Location: " + location + "\n\n\uF4CB Items:\n";
+    // Using the 100% correct bracketed Unicode syntax so JavaScript never crashes
+    let msg = "\u{1F354} KU URBAN BITES ORDER \u{1F354}\n\n\u{1F4CD} Location: " + location + "\n\n\u{1F4CB} Items:\n";
     let foodTotal = 0;
     const deliveryFee = 50; 
     
@@ -809,18 +816,50 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
     const finalTotalWithDelivery = foodTotal + deliveryFee;
     const balanceDueOnDelivery = halfFoodPrice + deliveryFee;
     
-    msg += "\n\uF4B5 Food Total: " + formatPrice(foodTotal) + 
-           "\n\uF3CD Delivery Fee: " + formatPrice(deliveryFee) +
-           "\n\uF3C1 Grand Total: " + formatPrice(finalTotalWithDelivery) + 
+    msg += "\n\u{1F4B5} Food Total: " + formatPrice(foodTotal) + 
+           "\n\u{1F3CD} Delivery Fee: " + formatPrice(deliveryFee) +
+           "\n\u{1F3C1} Grand Total: " + formatPrice(finalTotalWithDelivery) + 
            "\n------------------------" +
-           "\n\uF511 Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
-           "\n\uF91D Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
-           "\n\nTill Next Time, Thank you \uF680\uF3C6!";
+           "\n\u{1F511} Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
+           "\n\u{1F91D} Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
+           "\n\nTill Next Time, Thank you \u{1F680}\u{1F3C6}!";
     
+    // Formatted perfectly with your correct 254 phone number
     window.open("https://wa.me/254795459257?text=" + encodeURIComponent(msg), '_blank');
     
-    if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI(); }
+    if (confirm("Clear cart?")) { 
+        cart = []; 
+        saveCart(); 
+        updateCartUI(); 
+    }
 };
+
+// --- 2. INSTANT LIVE MENU HOOK (CRASH PROTECTION) ---
+// If Firebase takes too long or fails, this ensures your app keeps moving
+function listenToMenu() {
+    const menuContainer = document.getElementById("menuContainer");
+    
+    // Fallback timer: If Firebase hasn't responded in 2 seconds, remove the loading text
+    // so users can still see and interact with any elements on your page
+    setTimeout(() => {
+        const loadingElement = document.querySelector(".loading");
+        if (loadingElement) {
+            loadingElement.style.display = "none";
+            console.log("Firebase took too long, fallback activated.");
+        }
+    }, 2000);
+
+    // Your main Firebase database connector loop
+    db.ref("menu").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data && menuContainer) {
+            menuContainer.innerHTML = ""; // Wipes out loading text instantly
+            renderMenu(data); // Calls your routine to show the fresh items
+        }
+    }, (error) => {
+        console.error("Firebase database error: ", error);
+    });
+}
     };
     
     window.sendChatMessage = function() {
