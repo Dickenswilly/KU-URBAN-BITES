@@ -790,20 +790,39 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
     };
     
     window.sendWhatsAppOrder = function() {
-        const location = document.getElementById("deliveryLocation")?.value.trim();
-        if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
-        if (cart.length === 0) { alert("Cart is empty"); return; }
-        let msg = `🍔 KU URBAN BITES ORDER 🍔\n📍 Location: ${location}\n\n🧾 Items:\n`;
-        let total = 0;
-        cart.forEach(item => {
-            const qty = item.quantity || 1;
-            const sub = item.price * qty;
-            total += sub;
-            msg += `• ${item.name} x ${qty} = ${formatPrice(sub)}\n`;
-        });
-        msg += `\n💰 Total: ${formatPrice(total)}\n\nTill Next Time,Thank you🚀🏆!`;
-        window.open(`https://wa.me/254795459257?text=${encodeURIComponent(msg)}`, '_blank');
-        if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI(); }
+    const location = document.getElementById("deliveryLocation")?.value.trim();
+    if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
+    if (cart.length === 0) { alert("Cart is empty"); return; }
+    
+    let msg = "🍔 KU URBAN BITES ORDER 🍔\n\n📍 Location: " + location + "\n\n📋 Items:\n";
+    let foodTotal = 0;
+    const deliveryFee = 50; // Set flat delivery fee here
+    
+    cart.forEach(item => {
+        const qty = item.quantity || 1;
+        const sub = item.price * qty;
+        foodTotal += sub;
+        msg += "• " + item.name + " x " + qty + " = " + formatPrice(sub) + "\n";
+    });
+    
+    // Math for the 50/50 split policy + delivery fee
+    const halfFoodPrice = foodTotal / 2;
+    const finalTotalWithDelivery = foodTotal + deliveryFee;
+    const balanceDueOnDelivery = halfFoodPrice + deliveryFee;
+    
+    // Building the clear text breakdown for WhatsApp
+    msg += "\n💵 Food Total: " + formatPrice(foodTotal) + 
+           "\n🏍️ Delivery Fee: " + formatPrice(deliveryFee) +
+           "\n🏁 Grand Total: " + formatPrice(finalTotalWithDelivery) + 
+           "\n------------------------" +
+           "\n🔑 Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
+           "\n🤝 Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
+           "\n\nTill Next Time, Thank you 🚀🏆!";
+    
+    window.open("https://wa.me/24795459257?text=" + encodeURIComponent(msg), '_blank');
+    
+    if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI(); }
+}; }
     };
     
     window.sendChatMessage = function() {
