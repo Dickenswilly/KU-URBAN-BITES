@@ -787,46 +787,49 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
             alert("Admin mode ON");
             loadLiveMenu();
         } else { alert("Wrong password!"); }
+        
     };
     window.sendWhatsAppOrder = function() {
     const location = document.getElementById("deliveryLocation")?.value.trim();
     if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
     if (cart.length === 0) { alert("Cart is empty"); return; }
     
-    let msg = `🍔 KU URBAN BITES ORDER 🍔\n📍 Location: ${location}\n\n🧾 Items:\n`;
+    // Building the message step-by-step with clean spacing and emojis
+    let msg = "🍔 *KU URBAN BITES ORDER* 🍔\n\n";
+    msg += "📍 *Location:* " + location + "\n\n";
+    msg += "🧾 *Items Ordered:*\n";
+    
     let foodTotal = 0;
-    const deliveryFee = 50; // Your flat delivery fee
+    const deliveryFee = 50; 
     
     cart.forEach(item => {
         const qty = item.quantity || 1;
         const sub = item.price * qty;
         foodTotal += sub;
-        msg += `• ${item.name} x ${qty} = ${formatPrice(sub)}\n`;
+        msg += "• " + item.name + " x " + qty + " = " + formatPrice(sub) + "\n";
     });
     
-    // Automatic Math calculations for your 50/50 policy
+    // 50/50 Math Breakdown
     const halfFoodPrice = foodTotal / 2;
     const grandTotal = foodTotal + deliveryFee;
     const balanceOnDelivery = halfFoodPrice + deliveryFee;
     
-    // Building the clean text breakdown for your WhatsApp message
-    msg += `\n💵 Food Total: ${formatPrice(foodTotal)}`;
-    msg += `\n🏍️ Delivery Fee: ${formatPrice(deliveryFee)}`;
-    msg += `\n🏁 Grand Total: ${formatPrice(grandTotal)}`;
-    msg += `\n------------------------`;
-    msg += `\n🔑 Deposit to Pay Now (50%): ${formatPrice(halfFoodPrice)}`;
-    msg += `\n🤝 Balance on Delivery (50% + Fee): ${formatPrice(balanceOnDelivery)}`;
-    msg += `\n\nTill Next Time, Thank you 🚀🏆!`;
+    msg += "\n💵 *Food Total:* " + formatPrice(foodTotal) + "\n";
+    msg += "🏍️ *Delivery Fee:* " + formatPrice(deliveryFee) + "\n";
+    msg += "🏁 *Grand Total:* " + formatPrice(grandTotal) + "\n";
+    msg += "----------------------------\n";
+    msg += "🔑 *Deposit to Pay Now (50%):* " + formatPrice(halfFoodPrice) + "\n";
+    msg += "🤝 *Balance on Delivery:* " + formatPrice(balanceOnDelivery) + "\n\n";
+    msg += "Till Next Time, Thank you 🚀🏆!";
     
-    // Opens up WhatsApp perfectly with your correct phone number
-    window.open(`https://wa.me/254795459257?text=${encodeURIComponent(msg)}`, '_blank');
+    // Send cleanly to WhatsApp with your correct phone number
+    window.open("https://wa.me/254795459257?text=" + encodeURIComponent(msg), '_blank');
     
     if (confirm("Clear cart?")) { 
         cart = []; 
         saveCart(); 
         updateCartUI(); 
     }
-
 };
         
     window.sendChatMessage = function() {
