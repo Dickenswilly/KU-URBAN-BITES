@@ -801,7 +801,7 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
             total += sub;
             msg += `• ${item.name} x ${qty} = ${formatPrice(sub)}\n`;
         });
-        msg += `\n💰 Total: ${formatPrice(total)}\n\nPay after delivery. Thank you!`;
+        msg += `\n💰 Total: ${formatPrice(total)}\n\nTill Next Time,Thank you🚀🏆!`;
         window.open(`https://wa.me/254795459257?text=${encodeURIComponent(msg)}`, '_blank');
         if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI(); }
     };
