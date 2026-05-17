@@ -788,44 +788,38 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
             loadLiveMenu();
         } else { alert("Wrong password!"); }
     };
-   // --- 1. CRASH-PROOF WHATSAPP ORDER FUNCTION ---
-window.sendWhatsAppOrder = function() {
+ window.sendWhatsAppOrder = function() {
     const location = document.getElementById("deliveryLocation")?.value.trim();
-    if (!location) { 
-        alert("📍 Please enter your delivery location (hostel, gate, library)"); 
-        return; 
-    }
-    if (cart.length === 0) { 
-        alert("Cart is empty"); 
-        return; 
-    }
+    if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
+    if (cart.length === 0) { alert("Cart is empty"); return; }
     
-    // Using the 100% correct bracketed Unicode syntax so JavaScript never crashes
-    let msg = "\u{1F354} KU URBAN BITES ORDER \u{1F354}\n\n\u{1F4CD} Location: " + location + "\n\n\u{1F4CB} Items:\n";
+    let msg = `🍔 KU URBAN BITES ORDER 🍔\n📍 Location: ${location}\n\n🧾 Items:\n`;
     let foodTotal = 0;
-    const deliveryFee = 50; 
+    const deliveryFee = 50; // Your flat delivery fee
     
     cart.forEach(item => {
         const qty = item.quantity || 1;
         const sub = item.price * qty;
         foodTotal += sub;
-        msg += "• " + item.name + " x " + qty + " = " + formatPrice(sub) + "\n";
+        msg += `• ${item.name} x ${qty} = ${formatPrice(sub)}\n`;
     });
     
+    // Automatic Math calculations for your 50/50 policy
     const halfFoodPrice = foodTotal / 2;
-    const finalTotalWithDelivery = foodTotal + deliveryFee;
-    const balanceDueOnDelivery = halfFoodPrice + deliveryFee;
+    const grandTotal = foodTotal + deliveryFee;
+    const balanceOnDelivery = halfFoodPrice + deliveryFee;
     
-    msg += "\n\u{1F4B5} Food Total: " + formatPrice(foodTotal) + 
-           "\n\u{1F3CD} Delivery Fee: " + formatPrice(deliveryFee) +
-           "\n\u{1F3C1} Grand Total: " + formatPrice(finalTotalWithDelivery) + 
-           "\n------------------------" +
-           "\n\u{1F511} Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
-           "\n\u{1F91D} Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
-           "\n\nTill Next Time, Thank you \u{1F680}\u{1F3C6}!";
+    // Building the clean text breakdown for your WhatsApp message
+    msg += `\n💵 Food Total: ${formatPrice(foodTotal)}`;
+    msg += `\n🏍️ Delivery Fee: ${formatPrice(deliveryFee)}`;
+    msg += `\n🏁 Grand Total: ${formatPrice(grandTotal)}`;
+    msg += `\n------------------------`;
+    msg += `\n🔑 Deposit to Pay Now (50%): ${formatPrice(halfFoodPrice)}`;
+    msg += `\n🤝 Balance on Delivery (50% + Fee): ${formatPrice(balanceOnDelivery)}`;
+    msg += `\n\nTill Next Time, Thank you 🚀🏆!`;
     
-    // Formatted perfectly with your correct 254 phone number
-    window.open("https://wa.me/254795459257?text=" + encodeURIComponent(msg), '_blank');
+    // Opens up WhatsApp perfectly with your correct phone number
+    window.open(`https://wa.me/254795459257?text=${encodeURIComponent(msg)}`, '_blank');
     
     if (confirm("Clear cart?")) { 
         cart = []; 
@@ -833,35 +827,7 @@ window.sendWhatsAppOrder = function() {
         updateCartUI(); 
     }
 };
-
-// --- 2. INSTANT LIVE MENU HOOK (CRASH PROTECTION) ---
-// If Firebase takes too long or fails, this ensures your app keeps moving
-function listenToMenu() {
-    const menuContainer = document.getElementById("menuContainer");
-    
-    // Fallback timer: If Firebase hasn't responded in 2 seconds, remove the loading text
-    // so users can still see and interact with any elements on your page
-    setTimeout(() => {
-        const loadingElement = document.querySelector(".loading");
-        if (loadingElement) {
-            loadingElement.style.display = "none";
-            console.log("Firebase took too long, fallback activated.");
-        }
-    }, 2000);
-
-    // Your main Firebase database connector loop
-    db.ref("menu").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data && menuContainer) {
-            menuContainer.innerHTML = ""; // Wipes out loading text instantly
-            renderMenu(data); // Calls your routine to show the fresh items
-        }
-    }, (error) => {
-        console.error("Firebase database error: ", error);
-    });
-}
-    };
-    
+        
     window.sendChatMessage = function() {
         const input = document.getElementById("chatInput");
         const msg = input.value.trim();
