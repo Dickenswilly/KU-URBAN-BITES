@@ -823,7 +823,7 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
     msg += "Till Next Time, Thank you 🚀🏆!";
     
     // Send cleanly to WhatsApp with your correct phone number
-    window.open("https://wa.me/254795459257?text=" + encodeURIComponent(msg), '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=254795459257&text=${encodeURIComponent(msg)}`, '_blank');
     
     if (confirm("Clear cart?")) { 
         cart = []; 
