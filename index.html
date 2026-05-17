@@ -788,15 +788,15 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
             loadLiveMenu();
         } else { alert("Wrong password!"); }
     };
-    
     window.sendWhatsAppOrder = function() {
     const location = document.getElementById("deliveryLocation")?.value.trim();
     if (!location) { alert("📍 Please enter your delivery location (hostel, gate, library)"); return; }
     if (cart.length === 0) { alert("Cart is empty"); return; }
     
-    let msg = "🍔 KU URBAN BITES ORDER 🍔\n\n📍 Location: " + location + "\n\n📋 Items:\n";
+    // Using Unicode escape characters for 100% clean rendering
+    let msg = "\uF344 KU URBAN BITES ORDER \uF344\n\n\uF4CD Location: " + location + "\n\n\uF4CB Items:\n";
     let foodTotal = 0;
-    const deliveryFee = 50; // Set flat delivery fee here
+    const deliveryFee = 50; 
     
     cart.forEach(item => {
         const qty = item.quantity || 1;
@@ -805,23 +805,22 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
         msg += "• " + item.name + " x " + qty + " = " + formatPrice(sub) + "\n";
     });
     
-    // Math for the 50/50 split policy + delivery fee
     const halfFoodPrice = foodTotal / 2;
     const finalTotalWithDelivery = foodTotal + deliveryFee;
     const balanceDueOnDelivery = halfFoodPrice + deliveryFee;
     
-    // Building the clear text breakdown for WhatsApp
-    msg += "\n💵 Food Total: " + formatPrice(foodTotal) + 
-           "\n🏍️ Delivery Fee: " + formatPrice(deliveryFee) +
-           "\n🏁 Grand Total: " + formatPrice(finalTotalWithDelivery) + 
+    msg += "\n\uF4B5 Food Total: " + formatPrice(foodTotal) + 
+           "\n\uF3CD Delivery Fee: " + formatPrice(deliveryFee) +
+           "\n\uF3C1 Grand Total: " + formatPrice(finalTotalWithDelivery) + 
            "\n------------------------" +
-           "\n🔑 Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
-           "\n🤝 Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
-           "\n\nTill Next Time, Thank you 🚀🏆!";
+           "\n\uF511 Deposit to Pay Now (50% Food): " + formatPrice(halfFoodPrice) + 
+           "\n\uF91D Balance Cash on Delivery: " + formatPrice(balanceDueOnDelivery) + 
+           "\n\nTill Next Time, Thank you \uF680\uF3C6!";
     
     window.open("https://wa.me/254795459257?text=" + encodeURIComponent(msg), '_blank');
     
     if (confirm("Clear cart?")) { cart = []; saveCart(); updateCartUI(); }
+};
     };
     
     window.sendChatMessage = function() {
